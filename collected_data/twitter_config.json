@@ -1,0 +1,26 @@
+{
+  "platform": "twitter",
+  "keywords": [
+    "#FreePalestine",
+    "#Gaza",
+    "#Israel",
+    "#Palestine",
+    "#IsraelHamas",
+    "Israel Hamas war",
+    "Gaza conflict"
+  ],
+  "start_date": "2023-10-07",
+  "end_date": "2025-01-20",
+  "max_tweets": 10000,
+  "fields_to_collect": [
+    "tweet_id",
+    "username",
+    "date",
+    "text",
+    "retweet_count",
+    "like_count",
+    "reply_count",
+    "language",
+    "hashtags"
+  ]
+}
