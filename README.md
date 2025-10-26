@@ -107,8 +107,9 @@ python twitter_collector.py
 1. Edit `reddit_collector.py` and add your credentials:
 
 ```python
-CLIENT_ID = "your_client_id"
-CLIENT_SECRET = "your_client_secret"
+REDDIT_CLIENT_ID: "YOUR_CLIENT_ID",
+REDDIT_CLIENT_SECRET: "YOUR_CLIENT_SECRET",
+REDDIT_USER_AGENT: "YOUR_USER_AGENT"
 ```
 
 2. Run the collector:

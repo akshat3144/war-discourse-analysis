@@ -65,9 +65,9 @@ TWITTER_KEYWORDS = [
 # Get from: https://www.reddit.com/prefs/apps
 # ============================================================================
 REDDIT_CONFIG = {
-    "client_id": "YOUR_CLIENT_ID",
-    "client_secret": "YOUR_CLIENT_SECRET",
-    "user_agent": "palestine_research_collector v1.0 by /u/YOUR_USERNAME"
+    "REDDIT_CLIENT_ID": "YOUR_CLIENT_ID",
+    "REDDIT_CLIENT_SECRET": "YOUR_CLIENT_SECRET",
+    "REDDIT_USER_AGENT": "palestine_research_collector"
 }
 
 # Reddit subreddits to collect from
