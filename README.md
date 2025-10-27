@@ -17,8 +17,8 @@ This project collects and analyzes social media data to study **public discourse
 
 ## 🪄 Platforms Covered
 
-* **Reddit (Pushshift API)** — Historical and recent posts/comments from conflict-related subreddits
-* **YouTube (YouTube Data API v3)** — Video metadata and comments from major international news channels
+* **Reddit (Public JSON API)** — Latest posts and discussions from conflict-related subreddits
+* **YouTube (YouTube Data API v3)** — Video metadata and comments from **conflict-related videos** filtered by **keywords**
 
 ---
 
@@ -32,7 +32,7 @@ pip install -r requirements.txt
 
 ---
 
-### 2. Get API Credentials
+### 2. API Credentials
 
 #### 🟥 YouTube Data API v3
 
@@ -40,10 +40,14 @@ pip install -r requirements.txt
 2. Create a **new project**
 3. Enable the **YouTube Data API v3**
 4. Navigate to **APIs & Services → Credentials → Create API key**
-5. Copy your API key into `youtube_collector.py`
+5. Copy your API key into `youtube_collector.py`:
+
+```python
+YOUTUBE_API_KEY = "your_api_key"
+```
 
 ✅ **Note:**
-Reddit collection does **not** require any credentials — it uses the public **Pushshift JSON API**, which allows free access to Reddit’s historical and live data.
+Reddit collection does **not** require any credentials — it uses Reddit’s **public JSON endpoints**, allowing free access to live data without authentication.
 
 ---
 
@@ -51,10 +55,9 @@ Reddit collection does **not** require any credentials — it uses the public **
 
 ```
 CSS/
-├── data_collection_script.py       # Configuration setup
-├── reddit_collector.py             # Reddit data collection (Pushshift JSON-based)
-├── youtube_collector.py            # YouTube data collection (YouTube Data API v3)
-├── config_template.py              # Configuration for date ranges & parameters
+├── reddit_collector.py             # Reddit data collection (Public JSON API)
+├── youtube_collector.py            # YouTube data collection (YouTube Data API v3 + keyword search)
+├── config.py                       # Configuration file for future analysis
 ├── requirements.txt                # Python dependencies
 ├── README.md                       # This file
 └── collected_data/                 # Output directory
@@ -67,42 +70,29 @@ CSS/
 
 ## 🚀 Usage
 
-### Step 1 — Configure Parameters
+### Step 1 — Collect Reddit Data
 
-Edit `config_template.py` to set:
-
-* **Date range**
-* **Subreddits**
-* **Keywords**
-* **Output paths**
-
----
-
-### Step 2 — Collect Reddit Data
-
-Run the Reddit collector:
+Run:
 
 ```bash
 python reddit_collector.py
 ```
 
-**This uses the Pushshift API** to fetch both historical and live Reddit data, no authentication needed.
+**Fetches:**
+Latest Reddit posts from major subreddits using relevant conflict keywords.
 
 ---
 
-### Step 3 — Collect YouTube Data
+### Step 2 — Collect YouTube Data
 
-Add your API key to `youtube_collector.py`:
-
-```python
-YOUTUBE_API_KEY = "your_api_key"
-```
-
-Then run:
+Run:
 
 ```bash
 python youtube_collector.py
 ```
+
+**Fetches:**
+Latest Videos and comments **matching specific conflict-related keywords** from verified news channels.
 
 ---
 
@@ -121,7 +111,7 @@ python youtube_collector.py
 * r/geopolitics
 
 **Keywords:**
-`Palestine`, `Gaza`, `Israel`, `Hamas`, `IDF`, `West Bank`, `Israeli occupation`
+`Palestine`, `Gaza`, `Israel`, `Hamas`, `IDF`, `West Bank`, `Gaza Strip`, `Israeli occupation`
 
 **Data Fields:**
 
@@ -135,7 +125,8 @@ python youtube_collector.py
 | text         | Post body content           |
 | score        | Upvotes                     |
 | num_comments | Number of comments          |
-| upvote_ratio | Upvote ratio (if available) |
+| upvote_ratio | Upvote ratio                |
+| keyword      | Search keyword that matched |
 
 ---
 
@@ -149,27 +140,30 @@ python youtube_collector.py
 * Reuters
 * WION
 
+**Keywords Used for Filtering Videos:**
+`Israel`, `Hamas`, `Palestine`, `Gaza`, `IDF`, `Middle East`, `Conflict`, `War`, `Ceasefire`, `Jerusalem`
+
 **Data Fields:**
 
-| Field          | Description             |
-| -------------- | ----------------------- |
-| video_id       | YouTube video ID        |
-| channel_title  | Channel name            |
-| video_title    | Video title             |
-| published_date | Video upload date       |
-| description    | Video description       |
-| view_count     | Total views             |
-| like_count     | Likes on the video      |
-| comment_count  | Total comments          |
-| comment_text   | Individual comment text |
-| comment_author | Comment author          |
-| comment_date   | Comment timestamp       |
+| Field          | Description                    |
+| -------------- | ------------------------------ |
+| video_id       | YouTube video ID               |
+| channel_name   | Channel name                   |
+| video_title    | Video title                    |
+| published_date | Upload date                    |
+| description    | Video description              |
+| comment_text   | Individual comment             |
+| comment_author | Comment author                 |
+| comment_date   | Comment timestamp              |
+| like_count     | Likes on comment               |
+| reply_count    | Replies to comment             |
+| keyword        | Keyword that matched the video |
 
 ---
 
 ## 📁 Output Format
 
-All collectors save in **JSON** and **CSV** formats.
+All collected data is stored in both **JSON** and **CSV** formats.
 
 ### Example — Reddit JSON
 
@@ -181,7 +175,7 @@ All collectors save in **JSON** and **CSV** formats.
   "text": "Latest updates from Gaza...",
   "score": 512,
   "num_comments": 74,
-  "date": "2024-11-15T10:30:00"
+  "keyword": "Israel"
 }
 ```
 
@@ -190,11 +184,11 @@ All collectors save in **JSON** and **CSV** formats.
 ```json
 {
   "video_id": "abc123",
-  "channel_title": "BBC News",
+  "channel_name": "BBC News",
   "video_title": "Israel–Hamas Conflict Update",
   "comment_text": "Praying for peace",
   "comment_date": "2024-11-15T10:30:00",
-  "like_count": 200
+  "keyword": "Gaza"
 }
 ```
 
@@ -205,68 +199,36 @@ All collectors save in **JSON** and **CSV** formats.
 Once data is collected, you can perform:
 
 1. **Sentiment Analysis** — (`VADER`, `TextBlob`, or `transformers`)
-2. **Topic Modeling** — (`BERTopic` or `LDA`)
-3. **Entity Extraction** — identify names, locations, and organizations
-4. **Temporal Trends** — volume and sentiment over time
-5. **Platform Comparison** — contrasting narratives between Reddit & YouTube
+2. **Topic Modeling** — (`BERTopic`, `LDA`)
+3. **Entity Recognition** — Detect names, places, and organizations
+4. **Temporal Trends** — Compare posting/comment frequency over time
+5. **Platform Comparison** — Contrast Reddit vs YouTube narratives
 
 ---
 
-## ⚠️ Important Notes
+## ⚠️ Notes
 
 ### Rate Limiting
 
-* Pushshift and YouTube APIs handle rate limits automatically.
-* You can configure delays in `reddit_collector.py` (default = 1 second/request).
+* Reddit: uses 1-second delay per request
+* YouTube: limited by daily API quota (10,000 units/day)
 
 ### Data Ethics
 
-* Collect only **public** data.
-* Do not store or publish identifiable user data.
-* Follow each platform’s **Terms of Service**.
-* Anonymize user identifiers before analysis.
-
-### Storage
-
-* Large datasets can reach several GB depending on date range.
-* Store files in `collected_data/` and back them up regularly.
-
----
-
-## 🐛 Troubleshooting
-
-### Reddit
-
-* **Empty results:** Try shorter date ranges or fewer keywords.
-* **HTTP 500 errors:** Pushshift servers can temporarily fail — rerun after a few minutes.
-* **Slow response:** Add a small delay (`time.sleep(1)`) between requests.
-
-### YouTube
-
-* **quotaExceeded:** You’ve hit your daily API quota — try again tomorrow.
-* **403 errors:** Ensure YouTube Data API v3 is enabled.
-* **Missing comments:** Some videos disable comments; the script skips them automatically.
+* Collect **only public** data
+* Respect platform **Terms of Service**
+* Remove or anonymize usernames before publication
 
 ---
 
 ## 📚 References
 
-* **Israel–Hamas war through Telegram, Reddit and Twitter** — *Despoina Antonakaki, Sotiris Ioannidis (2025), Technical University of Crete, FORTH*
+* **Israel–Hamas war through Telegram, Reddit and Twitter** — *Despoina Antonakaki, Sotiris Ioannidis (2025)*
 * **Sentiment analysis of the Hamas–Israel war on YouTube** — *(2025, arXiv preprint)*
 
 ---
 
 ## 📄 License
 
-This project is for **research and educational purposes only**.
-Please cite the original papers if you use this methodology in academic work.
-
----
-
-## 🤝 Contributing
-
-Contributions welcome for:
-
-* Improved Reddit data filtering
-* Sentiment/topic analysis pipelines
-* Cross-platform narrative visualization
+This project is for **academic and educational use only**.
+Please cite the original papers if you use or extend this work.

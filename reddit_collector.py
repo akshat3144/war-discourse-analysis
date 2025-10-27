@@ -147,7 +147,7 @@ def main():
         "IDF", "West Bank", "Gaza Strip", "Israeli occupation"
     ]
 
-    posts = collector.collect_posts(SUBREDDITS, KEYWORDS, max_posts_per_sub=1000)
+    posts = collector.collect_posts(SUBREDDITS, KEYWORDS, max_posts_per_sub=2000)
     collector.save_data(posts, filename="reddit_israel_palestine")
 
     print("\n" + "=" * 60)

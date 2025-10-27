@@ -1,48 +1,16 @@
 """
-Configuration Template
-For Reddit + YouTube Data Collection
-Based on the Israel–Hamas War Social Media Analysis Papers
+Configuration file for Social Media Data Collection
+(Used by reddit_collector.py and youtube_collector.py)
 """
 
-# ============================================================================
-# YOUTUBE API CREDENTIALS
-# Get from: https://console.cloud.google.com/apis/credentials
-# ============================================================================
-YOUTUBE_CONFIG = {
-    "YOUTUBE_API_KEY": "YOUR_YOUTUBE_API_KEY",  # Replace with your YouTube Data API v3 key
-    "YOUTUBE_API_SERVICE_NAME": "youtube",
-    "YOUTUBE_API_VERSION": "v3",
-}
+from datetime import datetime
 
-# YouTube channels to collect from (based on the paper and related sources)
-YOUTUBE_CHANNELS = {
-    "BBC": "UC16niRr50-MSBwiO3YDb3RA",
-    "Aljazeera": "UCNye-wNBqNL5ZzHSJj3l8Bg",
-    "CNN": "UCupvZG-5ko_eiXAupbDfxWw",
-    "WION": "UC_gUM8rL-Lrg6O3adPW9K1g",
-    "Reuters": "UCZLZ8Jjx_RN2CXloOmgTHVg"
-}
+# ==========================================================
+# 🟥 REDDIT CONFIGURATION
+# ==========================================================
 
-# YouTube collection settings
-YOUTUBE_COLLECTION = {
-    "max_videos_per_channel": 10,   # Number of latest videos to fetch per channel
-    "max_comments_per_video": 500,  # Max comments per video
-    "include_replies": True,        # Whether to collect replies to comments
-    "language_filter": ["en"],      # Collect only English comments
-}
-
-# ============================================================================
-# REDDIT API CREDENTIALS
-# Get from: https://www.reddit.com/prefs/apps
-# ============================================================================
-REDDIT_CONFIG = {
-    "REDDIT_CLIENT_ID": "YOUR_CLIENT_ID",
-    "REDDIT_CLIENT_SECRET": "YOUR_CLIENT_SECRET",
-    "REDDIT_USER_AGENT": "palestine_research_collector"
-}
-
-# Reddit subreddits to collect from
-REDDIT_SUBREDDITS = [
+# Subreddits related to geopolitical and Middle East discussions
+SUBREDDITS = [
     "Palestine",
     "Israel",
     "IsraelPalestine",
@@ -52,7 +20,7 @@ REDDIT_SUBREDDITS = [
     "geopolitics"
 ]
 
-# Reddit keywords to search for
+# Conflict-related keywords
 REDDIT_KEYWORDS = [
     "Palestine",
     "Gaza",
@@ -61,82 +29,61 @@ REDDIT_KEYWORDS = [
     "IDF",
     "West Bank",
     "Gaza Strip",
-    "Israeli occupation"
+    "Israeli occupation",
+    "Middle East conflict"
 ]
 
-# ============================================================================
-# DATA COLLECTION SETTINGS
-# ============================================================================
+# Maximum posts to collect per subreddit
+MAX_POSTS_PER_SUB = 2000  # Increase for larger datasets
 
-# Date range (as used in the papers: October 7, 2023 – January 20, 2025)
-DATE_RANGE = {
-    "start_date": "2023-10-07",
-    "end_date": "2025-01-20"
+# ==========================================================
+# 🟥 YOUTUBE CONFIGURATION
+# ==========================================================
+
+# Channel IDs of major international news outlets
+YOUTUBE_CHANNELS = {
+    "BBC News": "UC16niRr50-MSBwiO3YDb3RA",
+    "Al Jazeera English": "UCNye-wNBqNL5ZzHSJj3l8Bg",
+    "CNN": "UCupvZG-5ko_eiXAupbDfxWw",
+    "Reuters": "UCZLZ8Jjx_RN2CXloOmgTHVg",
+    "WION": "UC_gUM8rL-Lrg6O3adPW9K1g"
 }
+
+# Keywords to filter YouTube videos
+YOUTUBE_KEYWORDS = [
+    "Israel",
+    "Palestine",
+    "Gaza",
+    "Hamas",
+    "IDF",
+    "Middle East",
+    "Conflict",
+    "War",
+    "Ceasefire",
+    "Jerusalem"
+]
 
 # Collection limits
-COLLECTION_LIMITS = {
-    "reddit": {
-        "posts_per_subreddit": 5000,
-        "max_total_posts": 20000,
-        "comments_per_post": 100
-    },
-    "youtube": {
-        "videos_per_channel": 10,
-        "max_comments_per_video": 500
-    }
-}
+MAX_VIDEOS_PER_CHANNEL = 10   # number of videos per channel
+MAX_COMMENTS_PER_VIDEO = 500  # number of comments per video
 
-# ============================================================================
-# OUTPUT SETTINGS
-# ============================================================================
-OUTPUT_CONFIG = {
-    "output_dir": "collected_data",
-    "save_formats": ["json", "csv"],  # Available: json, csv, parquet
-    "create_backup": True,
-    "compress_output": False  # Gzip compression
-}
+# ==========================================================
+# 🗂️ OUTPUT CONFIGURATION
+# ==========================================================
 
-# ============================================================================
-# COLLECTION BEHAVIOR
-# ============================================================================
-COLLECTION_CONFIG = {
-    "delay_between_requests": 1,  # seconds
-    "retry_attempts": 3,
-    "timeout": 30,  # seconds
-    "verify_ssl": True,
-    "save_frequency": 1000,  # Save after every N records
-    "log_level": "INFO"  # DEBUG, INFO, WARNING, ERROR
-}
+# Directory to save all collected data
+OUTPUT_DIR = "collected_data"
 
-# ============================================================================
-# FILTERING OPTIONS
-# ============================================================================
-FILTER_CONFIG = {
-    "languages": ["en", "ar", "he"],  # Empty list = all languages
-    "min_text_length": 10,  # Minimum characters
-    "verified_only": False  # For YouTube verified channels only
-}
+# Filename templates
+REDDIT_OUTPUT_FILE = "reddit_israel_palestine"
+YOUTUBE_OUTPUT_FILE = "youtube_israel_palestine"
 
-# ============================================================================
-# ANALYSIS SETTINGS (for future use)
-# ============================================================================
-ANALYSIS_CONFIG = {
-    "enable_sentiment": True,
-    "enable_topic_modeling": True,
-    "enable_entity_extraction": True,
-    "sentiment_model": "vader",  # vader, textblob, or transformers
-    "topic_model": "bertopic",  # bertopic or lda
-    "num_topics": 10
-}
+# ==========================================================
+# 🕒 DATE RANGE (for labeling or filtering during analysis)
+# ==========================================================
 
-# ============================================================================
-# SAFETY & ETHICS
-# ============================================================================
-ETHICS_CONFIG = {
-    "anonymize_users": True,  # Remove or hash usernames
-    "exclude_personal_info": True,  # Filter out phone numbers, emails
-    "respect_robots_txt": True,
-    "rate_limit_respect": True,
-    "terms_of_service_acknowledged": False  # Set to True after reading ToS
-}
+# Even though Reddit & YouTube collect latest data,
+# you can still define time range for reference in analysis.
+START_DATE = datetime(2023, 10, 7)   # Conflict start date
+END_DATE = datetime(2025, 1, 20)     # Latest collection date
+

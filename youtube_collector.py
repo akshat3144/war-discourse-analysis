@@ -1,7 +1,7 @@
 """
 YouTube Data Collection Implementation
 Collects video comments and metadata using YouTube Data API v3
-Replicates the methodology from 'Sentiment analysis of the Hamas-Israel war on YouTube comments using deep learning'
+Filtered by conflict-related keywords (no date restriction)
 """
 
 import os
@@ -18,10 +18,6 @@ load_dotenv()
 # Get API key
 API_KEY = os.getenv("YOUTUBE_API_KEY")
 
-# Initialize YouTube API
-youtube = build("youtube", "v3", developerKey=API_KEY)
-
-
 class YouTubeCollector:
     """
     Collects data (comments + metadata) from YouTube channels or videos
@@ -34,24 +30,28 @@ class YouTubeCollector:
         os.makedirs(output_dir, exist_ok=True)
         print("✓ Connected to YouTube Data API")
 
-    def get_channel_videos(self, channel_id: str, max_results: int = 50) -> List[str]:
+    def get_channel_videos(self, channel_id: str, max_results: int = 50, keywords: List[str] = None) -> List[str]:
         """
-        Retrieve video IDs from a specific channel
+        Retrieve video IDs from a specific channel filtered by keywords
+        (No date restriction)
         """
         video_ids = []
+        keywords_query = " ".join(keywords) if keywords else ""
+
         request = self.youtube.search().list(
-            part="id",
+            q=keywords_query,
             channelId=channel_id,
+            part="id,snippet",
             maxResults=max_results,
             order="date",
             type="video"
         )
-        response = request.execute()
 
+        response = request.execute()
         for item in response.get("items", []):
             video_ids.append(item["id"]["videoId"])
 
-        print(f"✓ Found {len(video_ids)} videos for channel ID: {channel_id}")
+        print(f"✓ Found {len(video_ids)} relevant videos for channel ID: {channel_id}")
         return video_ids
 
     def get_video_comments(self, video_id: str, max_comments: int = 500) -> List[Dict]:
@@ -103,14 +103,19 @@ class YouTubeCollector:
 
     def collect_from_channels(self, channel_ids: Dict[str, str],
                               max_videos_per_channel: int = 10,
-                              max_comments_per_video: int = 500) -> List[Dict]:
+                              max_comments_per_video: int = 500,
+                              keywords: List[str] = None) -> List[Dict]:
         """
-        Collect comments from multiple news channels
+        Collect comments from multiple channels filtered by keywords
         """
         all_comments = []
         for channel_name, channel_id in channel_ids.items():
             print(f"\n📺 Collecting from {channel_name}...")
-            video_ids = self.get_channel_videos(channel_id, max_videos_per_channel)
+            video_ids = self.get_channel_videos(
+                channel_id,
+                max_results=max_videos_per_channel,
+                keywords=keywords
+            )
 
             for vid in video_ids:
                 video_comments = self.get_video_comments(vid, max_comments_per_video)
@@ -146,7 +151,7 @@ def main():
     Collect YouTube comments on Israel–Hamas War from news channels
     """
     print("=" * 60)
-    print("YOUTUBE DATA COLLECTION")
+    print("YOUTUBE DATA COLLECTION (Keyword Filter Only)")
     print("=" * 60)
 
     collector = YouTubeCollector(API_KEY)
@@ -160,10 +165,13 @@ def main():
         "Reuters": "UCZLZ8Jjx_RN2CXloOmgTHVg"
     }
 
+    KEYWORDS = ["Israel", "Hamas", "Gaza", "Palestine", "conflict", "war"]
+
     comments = collector.collect_from_channels(
         channel_ids=CHANNEL_IDS,
         max_videos_per_channel=10,
-        max_comments_per_video=500
+        max_comments_per_video=500,
+        keywords=KEYWORDS
     )
 
     collector.save_data(comments, filename="youtube_israel_palestine")
