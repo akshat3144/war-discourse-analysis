@@ -1,23 +1,28 @@
-# Social Media Data Collection for Israel-Hamas War Analysis
+# 📊 Social Media Data Collection for Israel–Hamas War Analysis
 
-This project replicates the data collection methodology from the research paper "Israel–Hamas war through Telegram, Reddit and Twitter" by Despoina Antonakaki and Sotiris Ioannidis.
+This project replicates and extends the data collection methodology from two key research papers analyzing online discussions about the **Israel–Hamas war** — focusing here on **Reddit** and **YouTube**.
 
-## 📊 Paper Overview
+---
 
-The paper analyzes online discussions about the Israeli-Palestinian conflict across three platforms:
+## 🧠 Research Basis
 
-- **Telegram**: 125,054 messages from 20 channels (Oct 23, 2023 - Jan 20, 2025)
-- **Twitter**: 2,001 tweets
-- **Reddit**: 2 million opinions
+Inspired by:
 
-### Key Findings from the Paper:
+* **“Israel–Hamas war through Telegram, Reddit and Twitter”** — Despoina Antonakaki & Sotiris Ioannidis (2025)
+* **“Sentiment analysis of the Hamas–Israel war on YouTube”** (2025)
 
-- Polarized narratives across platforms
-- Sentiment-topic prevalence analysis
-- Entity extraction and BERT topic modeling
-- Volume analysis and emotional tone tracking
+This project collects and analyzes social media data to study **public discourse, sentiment, and topic prevalence** during the Israel–Hamas conflict.
 
-## 🛠️ Setup Instructions
+---
+
+## 🪄 Platforms Covered
+
+* **Reddit (Pushshift API)** — Historical and recent posts/comments from conflict-related subreddits
+* **YouTube (YouTube Data API v3)** — Video metadata and comments from major international news channels
+
+---
+
+## ⚙️ Setup Instructions
 
 ### 1. Install Required Libraries
 
@@ -25,263 +30,243 @@ The paper analyzes online discussions about the Israeli-Palestinian conflict acr
 pip install -r requirements.txt
 ```
 
+---
+
 ### 2. Get API Credentials
 
-#### Telegram API
+#### 🟥 YouTube Data API v3
 
-1. Visit https://my.telegram.org
-2. Login with your phone number
-3. Go to "API development tools"
-4. Create an application
-5. Save your `api_id` and `api_hash`
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a **new project**
+3. Enable the **YouTube Data API v3**
+4. Navigate to **APIs & Services → Credentials → Create API key**
+5. Copy your API key into `youtube_collector.py`
 
-#### Twitter/X (Optional - uses snscrape instead)
+✅ **Note:**
+Reddit collection does **not** require any credentials — it uses the public **Pushshift JSON API**, which allows free access to Reddit’s historical and live data.
 
-1. Visit https://developer.twitter.com
-2. Apply for developer access
-3. Create a project and app
-4. Save your API keys
-
-#### Reddit API
-
-1. Visit https://www.reddit.com/prefs/apps
-2. Click "create another app"
-3. Select "script"
-4. Save your `client_id` and `client_secret`
+---
 
 ## 📁 File Structure
 
 ```
 CSS/
-├── data_collection_script.py      # Main setup script
-├── telegram_collector.py          # Telegram data collection
-├── twitter_collector.py           # Twitter data collection
-├── reddit_collector.py            # Reddit data collection
-├── requirements.txt               # Python dependencies
-├── README.md                      # This file
-└── collected_data/                # Output directory
-    ├── telegram_config.json
-    ├── twitter_config.json
-    ├── reddit_config.json
+├── data_collection_script.py       # Configuration setup
+├── reddit_collector.py             # Reddit data collection (Pushshift JSON-based)
+├── youtube_collector.py            # YouTube data collection (YouTube Data API v3)
+├── config_template.py              # Configuration for date ranges & parameters
+├── requirements.txt                # Python dependencies
+├── README.md                       # This file
+└── collected_data/                 # Output directory
+    ├── reddit_israel_palestine.json
+    ├── youtube_israel_palestine.json
     └── [collected data files]
 ```
 
+---
+
 ## 🚀 Usage
 
-### Quick Start - Setup Configuration
+### Step 1 — Configure Parameters
 
-Run this first to create configuration files:
+Edit `config_template.py` to set:
 
-```bash
-python data_collection_script.py
-```
+* **Date range**
+* **Subreddits**
+* **Keywords**
+* **Output paths**
 
-This will create configuration files in the `collected_data` folder.
+---
 
-### Collect Telegram Data
+### Step 2 — Collect Reddit Data
 
-1. Edit `telegram_collector.py` and add your credentials:
-
-```python
-API_ID = "your_api_id"
-API_HASH = "your_api_hash"
-PHONE = "+1234567890"
-```
-
-2. Run the collector:
-
-```bash
-python telegram_collector.py
-```
-
-### Collect Twitter Data
-
-The Twitter collector uses `snscrape` (no API key needed):
-
-```bash
-python twitter_collector.py
-```
-
-### Collect Reddit Data
-
-1. Edit `reddit_collector.py` and add your credentials:
-
-```python
-REDDIT_CLIENT_ID: "YOUR_CLIENT_ID",
-REDDIT_CLIENT_SECRET: "YOUR_CLIENT_SECRET",
-REDDIT_USER_AGENT: "YOUR_USER_AGENT"
-```
-
-2. Run the collector:
+Run the Reddit collector:
 
 ```bash
 python reddit_collector.py
 ```
 
-## 📋 Data Collection Details
+**This uses the Pushshift API** to fetch both historical and live Reddit data, no authentication needed.
 
-### Telegram Channels (from Paper)
+---
 
-The paper collected from these 20 channels:
+### Step 3 — Collect YouTube Data
 
-- AlQassamBrigades (92,326 messages)
-- Eyeonpalestine (27,075 messages)
-- FreePalestine2023 (20,231 messages)
-- TheJerusalemPost (7,907 messages)
-- gazaenglishupdates (34,688 messages)
-- And 15 more channels...
+Add your API key to `youtube_collector.py`:
 
-### Twitter Keywords
+```python
+YOUTUBE_API_KEY = "your_api_key"
+```
 
-Search terms used:
+Then run:
 
-- #FreePalestine
-- #Gaza
-- #Israel
-- #Palestine
-- #IsraelHamas
-- "Gaza conflict"
-- "Israel Hamas war"
+```bash
+python youtube_collector.py
+```
 
-### Reddit Subreddits
+---
 
-Monitored subreddits:
+## 📊 Data Collection Details
 
-- r/Palestine
-- r/Israel
-- r/IsraelPalestine
-- r/worldnews
-- r/news
+### 🟥 Reddit Collection
 
-## 📊 Output Format
+**Subreddits Monitored:**
 
-All collectors save data in two formats:
+* r/Palestine
+* r/Israel
+* r/IsraelPalestine
+* r/worldnews
+* r/news
+* r/MiddleEastNews
+* r/geopolitics
 
-### JSON Format
+**Keywords:**
+`Palestine`, `Gaza`, `Israel`, `Hamas`, `IDF`, `West Bank`, `Israeli occupation`
+
+**Data Fields:**
+
+| Field        | Description                 |
+| ------------ | --------------------------- |
+| post_id      | Unique Reddit post ID       |
+| subreddit    | Source subreddit            |
+| author       | Username (if public)        |
+| date         | UTC post creation time      |
+| title        | Post title                  |
+| text         | Post body content           |
+| score        | Upvotes                     |
+| num_comments | Number of comments          |
+| upvote_ratio | Upvote ratio (if available) |
+
+---
+
+### 🟥 YouTube Collection
+
+**Channels Monitored:**
+
+* BBC News
+* Al Jazeera English
+* CNN
+* Reuters
+* WION
+
+**Data Fields:**
+
+| Field          | Description             |
+| -------------- | ----------------------- |
+| video_id       | YouTube video ID        |
+| channel_title  | Channel name            |
+| video_title    | Video title             |
+| published_date | Video upload date       |
+| description    | Video description       |
+| view_count     | Total views             |
+| like_count     | Likes on the video      |
+| comment_count  | Total comments          |
+| comment_text   | Individual comment text |
+| comment_author | Comment author          |
+| comment_date   | Comment timestamp       |
+
+---
+
+## 📁 Output Format
+
+All collectors save in **JSON** and **CSV** formats.
+
+### Example — Reddit JSON
 
 ```json
 {
-  "message_id": "123",
-  "channel_name": "example",
-  "date": "2024-01-20T10:30:00",
-  "text": "Message content...",
-  "views": 1000,
-  "forwards": 50
+  "post_id": "xyz123",
+  "subreddit": "worldnews",
+  "title": "Israel–Hamas conflict intensifies",
+  "text": "Latest updates from Gaza...",
+  "score": 512,
+  "num_comments": 74,
+  "date": "2024-11-15T10:30:00"
 }
 ```
 
-### CSV Format
+### Example — YouTube JSON
 
-Same fields in tabular format for easy analysis in Excel/Pandas.
+```json
+{
+  "video_id": "abc123",
+  "channel_title": "BBC News",
+  "video_title": "Israel–Hamas Conflict Update",
+  "comment_text": "Praying for peace",
+  "comment_date": "2024-11-15T10:30:00",
+  "like_count": 200
+}
+```
 
-## 🔍 Data Fields
+---
 
-### Telegram
+## 📈 Next Steps — Analysis
 
-- message_id
-- channel_name
-- date
-- text
-- views
-- forwards
-- replies
-- media_type
+Once data is collected, you can perform:
 
-### Twitter
+1. **Sentiment Analysis** — (`VADER`, `TextBlob`, or `transformers`)
+2. **Topic Modeling** — (`BERTopic` or `LDA`)
+3. **Entity Extraction** — identify names, locations, and organizations
+4. **Temporal Trends** — volume and sentiment over time
+5. **Platform Comparison** — contrasting narratives between Reddit & YouTube
 
-- tweet_id
-- username
-- date
-- text
-- retweet_count
-- like_count
-- reply_count
-- hashtags
-
-### Reddit
-
-- post_id
-- subreddit
-- author
-- date
-- title
-- text
-- score
-- num_comments
-- upvote_ratio
-
-## 📈 Next Steps - Analysis
-
-After collecting data, you can perform:
-
-1. **Volume Analysis**: Track message frequency over time
-2. **Entity Extraction**: Identify key entities mentioned
-3. **Topic Modeling**: Use BERTopic or LDA
-4. **Sentiment Analysis**: Analyze emotional tone
-5. **Network Analysis**: Study information spread patterns
+---
 
 ## ⚠️ Important Notes
 
 ### Rate Limiting
 
-- Telegram: Built-in 1-second delay between requests
-- Twitter: snscrape handles rate limiting automatically
-- Reddit: PRAW handles rate limiting automatically
+* Pushshift and YouTube APIs handle rate limits automatically.
+* You can configure delays in `reddit_collector.py` (default = 1 second/request).
 
-### Privacy & Ethics
+### Data Ethics
 
-- Respect user privacy
-- Follow platform Terms of Service
-- Only collect public data
-- Anonymize personal information
-- Use data responsibly
+* Collect only **public** data.
+* Do not store or publish identifiable user data.
+* Follow each platform’s **Terms of Service**.
+* Anonymize user identifiers before analysis.
 
-### Data Storage
+### Storage
 
-- Large datasets can be several GB
-- Ensure sufficient disk space
-- Consider database storage for large collections
-- Regularly backup collected data
+* Large datasets can reach several GB depending on date range.
+* Store files in `collected_data/` and back them up regularly.
+
+---
 
 ## 🐛 Troubleshooting
 
-### Telegram Issues
+### Reddit
 
-- **Error: Phone number not registered**: Register your phone number with Telegram first
-- **Error: API ID invalid**: Double-check your credentials from my.telegram.org
-- **Flood wait error**: You're collecting too fast; the script already has delays built-in
+* **Empty results:** Try shorter date ranges or fewer keywords.
+* **HTTP 500 errors:** Pushshift servers can temporarily fail — rerun after a few minutes.
+* **Slow response:** Add a small delay (`time.sleep(1)`) between requests.
 
-### Twitter Issues
+### YouTube
 
-- **Error: Module not found**: Install snscrape: `pip install snscrape`
-- **No tweets returned**: Try different date ranges or keywords
-- **Rate limit**: Wait a few minutes and try again
+* **quotaExceeded:** You’ve hit your daily API quota — try again tomorrow.
+* **403 errors:** Ensure YouTube Data API v3 is enabled.
+* **Missing comments:** Some videos disable comments; the script skips them automatically.
 
-### Reddit Issues
-
-- **401 Unauthorized**: Check your API credentials
-- **429 Too Many Requests**: PRAW handles this automatically, just wait
-- **Empty results**: Verify subreddit names and date ranges
+---
 
 ## 📚 References
 
-Based on the paper:
+* **Israel–Hamas war through Telegram, Reddit and Twitter** — *Despoina Antonakaki, Sotiris Ioannidis (2025), Technical University of Crete, FORTH*
+* **Sentiment analysis of the Hamas–Israel war on YouTube** — *(2025, arXiv preprint)*
 
-- **Title**: Israel–Hamas war through Telegram, Reddit and Twitter
-- **Authors**: Despoina Antonakaki, Sotiris Ioannidis
-- **Institution**: Technical University of Crete & FORTH
-- **Date**: February 4, 2025
-- **arXiv**: 2502.00060v1 [cs.SI]
+---
 
 ## 📄 License
 
-This code is provided for research and educational purposes. Please cite the original paper if you use this methodology in your research.
+This project is for **research and educational purposes only**.
+Please cite the original papers if you use this methodology in academic work.
+
+---
 
 ## 🤝 Contributing
 
-Feel free to improve this code:
+Contributions welcome for:
 
-- Add more platforms (TikTok, Facebook, etc.)
-- Improve error handling
-- Add data validation
-- Create analysis scripts
+* Improved Reddit data filtering
+* Sentiment/topic analysis pipelines
+* Cross-platform narrative visualization

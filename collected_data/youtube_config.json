@@ -1,0 +1,24 @@
+{
+  "platform": "youtube",
+  "channels": {
+    "BBC": "UC16niRr50-MSBwiO3YDb3RA",
+    "Aljazeera": "UCNye-wNBqNL5ZzHSJj3l8Bg",
+    "CNN": "UCupvZG-5ko_eiXAupbDfxWw",
+    "WION": "UC_gUM8rL-Lrg6O3adPW9K1g",
+    "Reuters": "UCZLZ8Jjx_RN2CXloOmgTHVg"
+  },
+  "start_date": "2023-10-07",
+  "end_date": "2025-01-20",
+  "max_videos_per_channel": 10,
+  "max_comments_per_video": 500,
+  "fields_to_collect": [
+    "video_id",
+    "comment_id",
+    "author",
+    "text",
+    "published_at",
+    "like_count",
+    "reply_count",
+    "channel_name"
+  ]
+}

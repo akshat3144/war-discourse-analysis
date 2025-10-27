@@ -1,64 +1,35 @@
 """
 Configuration Template
+For Reddit + YouTube Data Collection
+Based on the Israel–Hamas War Social Media Analysis Papers
 """
 
 # ============================================================================
-# TELEGRAM API CREDENTIALS
-# Get from: https://my.telegram.org
+# YOUTUBE API CREDENTIALS
+# Get from: https://console.cloud.google.com/apis/credentials
 # ============================================================================
-TELEGRAM_CONFIG = {
-    "api_id": "YOUR_API_ID",  # e.g., 12345678
-    "api_hash": "YOUR_API_HASH",  # e.g., "0123456789abcdef0123456789abcdef"
-    "phone": "YOUR_PHONE_NUMBER",  # e.g., "+1234567890" (with country code)
+YOUTUBE_CONFIG = {
+    "YOUTUBE_API_KEY": "YOUR_YOUTUBE_API_KEY",  # Replace with your YouTube Data API v3 key
+    "YOUTUBE_API_SERVICE_NAME": "youtube",
+    "YOUTUBE_API_VERSION": "v3",
 }
 
-# Telegram channels to collect from (from the paper)
-TELEGRAM_CHANNELS = [
-    "AlQassamBrigades",
-    "Aqsatvsat",
-    "Eyeonpalestine",
-    "FreePalestine2023",
-    "GazaNow",
-    "PalestineSolidarityBelgium",
-    "PalestineUpdates",
-    "PalestinianResistance",
-    "StopGazaGenocide",
-    "TIMESOFGAZA",
-    "TheJerusalemPost",
-    "bigolivr",
-    "gazaalanpa",
-    "gazaenglishupdates",
-    "haqqintel",
-    "palOnline",
-    "palestineonline",
-    "palestineresistance",
-    "resistancechain"
-]
-
-# ============================================================================
-# TWITTER/X API CREDENTIALS (Optional - snscrape doesn't need API)
-# Get from: https://developer.twitter.com
-# ============================================================================
-TWITTER_CONFIG = {
-    "api_key": "YOUR_API_KEY",
-    "api_secret": "YOUR_API_SECRET",
-    "access_token": "YOUR_ACCESS_TOKEN",
-    "access_token_secret": "YOUR_ACCESS_TOKEN_SECRET",
+# YouTube channels to collect from (based on the paper and related sources)
+YOUTUBE_CHANNELS = {
+    "BBC": "UC16niRr50-MSBwiO3YDb3RA",
+    "Aljazeera": "UCNye-wNBqNL5ZzHSJj3l8Bg",
+    "CNN": "UCupvZG-5ko_eiXAupbDfxWw",
+    "WION": "UC_gUM8rL-Lrg6O3adPW9K1g",
+    "Reuters": "UCZLZ8Jjx_RN2CXloOmgTHVg"
 }
 
-# Twitter keywords to search for
-TWITTER_KEYWORDS = [
-    "#FreePalestine",
-    "#Gaza",
-    "#Israel",
-    "#Palestine",
-    "#IsraelHamas",
-    "#GazaUnderAttack",
-    "#PalestineWillBeFree",
-    "Gaza conflict",
-    "Israel Hamas war",
-    "Palestinian solidarity"
-]
+# YouTube collection settings
+YOUTUBE_COLLECTION = {
+    "max_videos_per_channel": 10,   # Number of latest videos to fetch per channel
+    "max_comments_per_video": 500,  # Max comments per video
+    "include_replies": True,        # Whether to collect replies to comments
+    "language_filter": ["en"],      # Collect only English comments
+}
 
 # ============================================================================
 # REDDIT API CREDENTIALS
@@ -97,26 +68,22 @@ REDDIT_KEYWORDS = [
 # DATA COLLECTION SETTINGS
 # ============================================================================
 
-# Date range (from the paper: October 23, 2023 - January 20, 2025)
+# Date range (as used in the papers: October 7, 2023 – January 20, 2025)
 DATE_RANGE = {
-    "start_date": "2023-10-23",
+    "start_date": "2023-10-07",
     "end_date": "2025-01-20"
 }
 
 # Collection limits
 COLLECTION_LIMITS = {
-    "telegram": {
-        "messages_per_channel": None,  # None = unlimited
-        "max_total_messages": 150000
-    },
-    "twitter": {
-        "tweets_per_keyword": 2000,
-        "max_total_tweets": 10000
-    },
     "reddit": {
         "posts_per_subreddit": 5000,
         "max_total_posts": 20000,
         "comments_per_post": 100
+    },
+    "youtube": {
+        "videos_per_channel": 10,
+        "max_comments_per_video": 500
     }
 }
 
@@ -138,7 +105,7 @@ COLLECTION_CONFIG = {
     "retry_attempts": 3,
     "timeout": 30,  # seconds
     "verify_ssl": True,
-    "save_frequency": 1000,  # Save after every N messages
+    "save_frequency": 1000,  # Save after every N records
     "log_level": "INFO"  # DEBUG, INFO, WARNING, ERROR
 }
 
@@ -148,9 +115,7 @@ COLLECTION_CONFIG = {
 FILTER_CONFIG = {
     "languages": ["en", "ar", "he"],  # Empty list = all languages
     "min_text_length": 10,  # Minimum characters
-    "exclude_retweets": False,
-    "exclude_replies": False,
-    "verified_only": False  # Only verified accounts
+    "verified_only": False  # For YouTube verified channels only
 }
 
 # ============================================================================
