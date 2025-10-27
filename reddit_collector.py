@@ -1,6 +1,7 @@
 """
 Reddit Data Collection via Reddit's Public JSON Endpoints
 (No API credentials required, reliable alternative to Pushshift)
+Filtered by conflict-related keywords and date range
 """
 
 import requests
@@ -24,15 +25,27 @@ class RedditCollector:
         self.headers = {"User-Agent": "Mozilla/5.0 (Reddit Data Collector)"}
         print("✓ Connected to Reddit public JSON endpoints")
 
-    def collect_posts(self,
-                      subreddits: List[str],
-                      keywords: List[str],
-                      max_posts_per_sub: int = 500) -> List[Dict]:
+    def collect_posts(
+        self,
+        subreddits: List[str],
+        keywords: List[str],
+        max_posts_per_sub: int = 500,
+        start_date: str = None,
+        end_date: str = None
+    ) -> List[Dict]:
         """
-        Collect posts from multiple subreddits
-        using Reddit's JSON endpoints (no API keys required)
+        Collect posts from multiple subreddits using Reddit's JSON endpoints (no API keys)
+        Filters by conflict-related keywords and optional date range.
         """
         all_posts = []
+
+        # Convert dates to timestamps
+        start_timestamp = (
+            int(datetime.strptime(start_date, "%Y-%m-%d").timestamp()) if start_date else None
+        )
+        end_timestamp = (
+            int(datetime.strptime(end_date, "%Y-%m-%d").timestamp()) if end_date else None
+        )
 
         for subreddit in subreddits:
             print(f"\nCollecting from r/{subreddit}...")
@@ -63,11 +76,19 @@ class RedditCollector:
 
                         for post in posts:
                             post_data = post["data"]
+                            created_utc = post_data.get("created_utc")
+
+                            # ✅ Filter by date range
+                            if start_timestamp and created_utc < start_timestamp:
+                                continue
+                            if end_timestamp and created_utc > end_timestamp:
+                                continue
+
                             post_record = {
                                 "post_id": post_data.get("id"),
                                 "subreddit": subreddit,
                                 "author": post_data.get("author"),
-                                "date": datetime.utcfromtimestamp(post_data.get("created_utc")).isoformat(),
+                                "date": datetime.utcfromtimestamp(created_utc).isoformat(),
                                 "title": post_data.get("title", ""),
                                 "text": post_data.get("selftext", ""),
                                 "score": post_data.get("score", 0),
@@ -127,7 +148,7 @@ def main():
     Main execution
     """
     print("=" * 60)
-    print("REDDIT DATA COLLECTION (Reliable Public JSON)")
+    print("REDDIT DATA COLLECTION (Keyword + Date Filter)")
     print("=" * 60)
 
     collector = RedditCollector()
@@ -147,7 +168,18 @@ def main():
         "IDF", "West Bank", "Gaza Strip", "Israeli occupation"
     ]
 
-    posts = collector.collect_posts(SUBREDDITS, KEYWORDS, max_posts_per_sub=2000)
+    # ✅ Date range filter (Israel–Hamas war period)
+    START_DATE = "2023-10-07"
+    END_DATE = "2025-01-20"
+
+    posts = collector.collect_posts(
+        SUBREDDITS,
+        KEYWORDS,
+        max_posts_per_sub=2000,
+        start_date=START_DATE,
+        end_date=END_DATE
+    )
+
     collector.save_data(posts, filename="reddit_israel_palestine")
 
     print("\n" + "=" * 60)
