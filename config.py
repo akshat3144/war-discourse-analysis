@@ -1,6 +1,6 @@
 """
 Configuration file for Social Media Data Collection
-(Used by reddit_collector.py and youtube_collector.py)
+(Used by reddit_collector.py, youtube_collector.py, and telegram_collector.py)
 """
 
 from datetime import datetime
@@ -64,8 +64,38 @@ YOUTUBE_KEYWORDS = [
 ]
 
 # Collection limits
-MAX_VIDEOS_PER_CHANNEL = 10   # number of videos per channel
-MAX_COMMENTS_PER_VIDEO = 500  # number of comments per video
+MAX_VIDEOS_PER_CHANNEL = 10   # Number of videos per channel
+MAX_COMMENTS_PER_VIDEO = 500  # Number of comments per video
+
+# ==========================================================
+# 🟦 TELEGRAM CONFIGURATION
+# ==========================================================
+
+# Channels known to discuss or report on the Israel–Hamas conflict
+TELEGRAM_CHANNELS = [
+    "AlQassamBrigades",
+    "Aqsatvsat",
+    "Eyeonpalestine",
+    "FreePalestine2023",
+    "GazaNow",
+    "PalestineSolidarityBelgium",
+    "PalestineUpdates",
+    "PalestinianResistance",
+    "StopGazaGenocide",
+    "TIMESOFGAZA",
+    "TheJerusalemPost",
+    "bigolivr",
+    "gazaalanpa",
+    "gazaenglishupdates",
+    "haqqintel",
+    "palOnline",
+    "palestineonline",
+    "palestineresistance",
+    "resistancechain"
+]
+
+# Maximum messages to collect per channel
+MAX_MESSAGES_PER_CHANNEL = 2000
 
 # ==========================================================
 # 🗂️ OUTPUT CONFIGURATION
@@ -77,13 +107,11 @@ OUTPUT_DIR = "collected_data"
 # Filename templates
 REDDIT_OUTPUT_FILE = "reddit_israel_palestine"
 YOUTUBE_OUTPUT_FILE = "youtube_israel_palestine"
+TELEGRAM_OUTPUT_FILE = "telegram_israel_palestine"
 
 # ==========================================================
-# 🕒 DATE RANGE (for labeling or filtering during analysis)
+# 🕒 DATE RANGE (used for filtering or labeling during analysis)
 # ==========================================================
 
-# Even though Reddit & YouTube collect latest data,
-# you can still define time range for reference in analysis.
 START_DATE = datetime(2023, 10, 7)   # Conflict start date
 END_DATE = datetime(2025, 1, 20)     # Latest collection date
-

@@ -1,6 +1,6 @@
 # 📊 Social Media Data Collection for Israel–Hamas War Analysis
 
-This project replicates and extends the data collection methodology from two key research papers analyzing online discussions about the **Israel–Hamas war** — focusing here on **Reddit** and **YouTube**.
+This project replicates and extends the data collection methodology from key research papers analyzing online discourse about the **Israel–Hamas war**, focusing on **Reddit**, **YouTube**, and **Telegram**.
 
 ---
 
@@ -11,20 +11,21 @@ Inspired by:
 * **“Israel–Hamas war through Telegram, Reddit and Twitter”** — Despoina Antonakaki & Sotiris Ioannidis (2025)
 * **“Sentiment analysis of the Hamas–Israel war on YouTube”** (2025)
 
-This project collects and analyzes social media data to study **public discourse, sentiment, and topic prevalence** during the Israel–Hamas conflict.
+This project collects and analyzes social media data to study **public discourse, sentiment, and topic prevalence** across major online platforms during the Israel–Hamas conflict.
 
 ---
 
 ## 🪄 Platforms Covered
 
-* **Reddit (Public JSON API)** — Latest posts and discussions from conflict-related subreddits
-* **YouTube (YouTube Data API v3)** — Video metadata and comments from **conflict-related videos** filtered by **keywords**
+* **Reddit (Public JSON API)** — Latest and historical posts from conflict-related subreddits
+* **YouTube (YouTube Data API v3)** — Video metadata + comments from verified news channels, filtered by keywords
+* **Telegram (Telethon)** — Public channel messages within a specific date range
 
 ---
 
 ## ⚙️ Setup Instructions
 
-### 1. Install Required Libraries
+### 1️⃣ Install Required Libraries
 
 ```bash
 pip install -r requirements.txt
@@ -32,22 +33,21 @@ pip install -r requirements.txt
 
 ---
 
-### 2. API Credentials
+### 2️⃣ API Credentials & Environment Setup
 
-#### 🟥 YouTube Data API v3
+Create a `.env` file in your project root:
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a **new project**
-3. Enable the **YouTube Data API v3**
-4. Navigate to **APIs & Services → Credentials → Create API key**
-5. Copy your API key into `youtube_collector.py`:
+```env
+# YouTube
+YOUTUBE_API_KEY=your_youtube_api_key
 
-```python
-YOUTUBE_API_KEY = "your_api_key"
+# Telegram
+TELEGRAM_API_ID=your_api_id
+TELEGRAM_API_HASH=your_api_hash
+TELEGRAM_PHONE=+91xxxxxxxxxx
 ```
 
-✅ **Note:**
-Reddit collection does **not** require any credentials — it uses Reddit’s **public JSON endpoints**, allowing free access to live data without authentication.
+✅ **Reddit:** no credentials needed — it uses Reddit’s public JSON endpoints.
 
 ---
 
@@ -55,121 +55,133 @@ Reddit collection does **not** require any credentials — it uses Reddit’s **
 
 ```
 CSS/
-├── reddit_collector.py             # Reddit data collection (Public JSON API)
-├── youtube_collector.py            # YouTube data collection (YouTube Data API v3 + keyword search)
-├── config.py                       # Configuration file for future analysis
-├── requirements.txt                # Python dependencies
-├── README.md                       # This file
-└── collected_data/                 # Output directory
+├── reddit_collector.py          # Reddit data collection (Public JSON)
+├── youtube_collector.py         # YouTube data collection (API + keywords)
+├── telegram_collector.py        # Telegram data collection (Telethon + date filter)
+├── config.py                    # Central configuration file
+├── requirements.txt             # Python dependencies
+├── README.md                    # Documentation
+└── collected_data/              # Output directory
     ├── reddit_israel_palestine.json
     ├── youtube_israel_palestine.json
-    └── [collected data files]
+    ├── telegram_israel_palestine.json
 ```
 
 ---
 
-## 🚀 Usage
+## 🚀 Usage Guide
 
-### Step 1 — Collect Reddit Data
-
-Run:
+### 🟥 Step 1 — Reddit Data Collection
 
 ```bash
 python reddit_collector.py
 ```
 
-**Fetches:**
-Latest Reddit posts from major subreddits using relevant conflict keywords.
+**Fetches:** Recent Reddit posts containing conflict-related keywords from targeted subreddits.
 
 ---
 
-### Step 2 — Collect YouTube Data
-
-Run:
+### 🟦 Step 2 — YouTube Data Collection
 
 ```bash
 python youtube_collector.py
 ```
 
-**Fetches:**
-Latest Videos and comments **matching specific conflict-related keywords** from verified news channels.
+**Fetches:** Videos and comments matching Israel–Hamas war keywords from trusted news channels.
+
+---
+
+### 🟩 Step 3 — Telegram Data Collection
+
+```bash
+python telegram_collector.py
+```
+
+**Fetches:** Messages from public Telegram channels (e.g., GazaNow, EyeOnPalestine, TimesOfGaza) within the defined date range.
 
 ---
 
 ## 📊 Data Collection Details
 
-### 🟥 Reddit Collection
+### 🟥 Reddit
 
-**Subreddits Monitored:**
-
-* r/Palestine
-* r/Israel
-* r/IsraelPalestine
-* r/worldnews
-* r/news
-* r/MiddleEastNews
-* r/geopolitics
+**Subreddits:**
+`Palestine`, `Israel`, `IsraelPalestine`, `worldnews`, `news`, `MiddleEastNews`, `geopolitics`
 
 **Keywords:**
-`Palestine`, `Gaza`, `Israel`, `Hamas`, `IDF`, `West Bank`, `Gaza Strip`, `Israeli occupation`
+`Palestine`, `Gaza`, `Israel`, `Hamas`, `IDF`, `West Bank`, `Israeli occupation`, `Gaza Strip`
 
-**Data Fields:**
+**Fields:**
 
-| Field        | Description                 |
-| ------------ | --------------------------- |
-| post_id      | Unique Reddit post ID       |
-| subreddit    | Source subreddit            |
-| author       | Username (if public)        |
-| date         | UTC post creation time      |
-| title        | Post title                  |
-| text         | Post body content           |
-| score        | Upvotes                     |
-| num_comments | Number of comments          |
-| upvote_ratio | Upvote ratio                |
-| keyword      | Search keyword that matched |
+| Field        | Description           |
+| ------------ | --------------------- |
+| post_id      | Unique Reddit post ID |
+| subreddit    | Source subreddit      |
+| author       | Username (if public)  |
+| date         | UTC post timestamp    |
+| title        | Post title            |
+| text         | Post body             |
+| score        | Upvotes               |
+| num_comments | Number of comments    |
+| upvote_ratio | Upvote ratio          |
+| keyword      | Matched keyword       |
 
 ---
 
-### 🟥 YouTube Collection
+### 🟦 YouTube
+
+**Channels:** BBC News | Al Jazeera English | CNN | Reuters | WION
+
+**Keywords:**
+`Israel`, `Hamas`, `Palestine`, `Gaza`, `Conflict`, `War`, `Ceasefire`, `Jerusalem`, `Middle East`, `IDF`
+
+**Fields:**
+
+| Field          | Description        |
+| -------------- | ------------------ |
+| video_id       | YouTube video ID   |
+| channel_name   | Source channel     |
+| video_title    | Title              |
+| published_date | Upload date        |
+| description    | Video description  |
+| comment_text   | Individual comment |
+| comment_author | Comment author     |
+| comment_date   | Comment timestamp  |
+| like_count     | Comment likes      |
+| reply_count    | Replies            |
+| keyword        | Matched keyword    |
+
+---
+
+### 🟩 Telegram
 
 **Channels Monitored:**
+`GazaNow`, `EyeonPalestine`, `TimesOfGaza`, `AlMayadeenNews`, `MiddleEastMonitor`, `Jerusalem_Post`, `BBCBreaking`, and others.
 
-* BBC News
-* Al Jazeera English
-* CNN
-* Reuters
-* WION
+**Date Range:** `2023-10-07 → 2025-01-20`
 
-**Keywords Used for Filtering Videos:**
-`Israel`, `Hamas`, `Palestine`, `Gaza`, `IDF`, `Middle East`, `Conflict`, `War`, `Ceasefire`, `Jerusalem`
+**Fields:**
 
-**Data Fields:**
-
-| Field          | Description                    |
-| -------------- | ------------------------------ |
-| video_id       | YouTube video ID               |
-| channel_name   | Channel name                   |
-| video_title    | Video title                    |
-| published_date | Upload date                    |
-| description    | Video description              |
-| comment_text   | Individual comment             |
-| comment_author | Comment author                 |
-| comment_date   | Comment timestamp              |
-| like_count     | Likes on comment               |
-| reply_count    | Replies to comment             |
-| keyword        | Keyword that matched the video |
+| Field      | Description             |
+| ---------- | ----------------------- |
+| channel    | Source Telegram channel |
+| message_id | Unique message ID       |
+| date       | UTC timestamp           |
+| text       | Message content         |
+| views      | Number of views         |
+| forwards   | Number of forwards      |
+| replies    | Number of replies       |
+| link       | Direct message URL      |
 
 ---
 
-## 📁 Output Format
+## 📁 Output Examples
 
-All collected data is stored in both **JSON** and **CSV** formats.
-
-### Example — Reddit JSON
+### Reddit (JSON)
 
 ```json
 {
-  "post_id": "xyz123",
+  "post_id": "abc123",
   "subreddit": "worldnews",
   "title": "Israel–Hamas conflict intensifies",
   "text": "Latest updates from Gaza...",
@@ -179,11 +191,11 @@ All collected data is stored in both **JSON** and **CSV** formats.
 }
 ```
 
-### Example — YouTube JSON
+### YouTube (JSON)
 
 ```json
 {
-  "video_id": "abc123",
+  "video_id": "xyz789",
   "channel_name": "BBC News",
   "video_title": "Israel–Hamas Conflict Update",
   "comment_text": "Praying for peace",
@@ -192,43 +204,51 @@ All collected data is stored in both **JSON** and **CSV** formats.
 }
 ```
 
+### Telegram (JSON)
+
+```json
+{
+  "channel": "TimesOfGaza",
+  "message_id": 12345,
+  "date": "2024-10-12T09:15:00Z",
+  "text": "Breaking: ceasefire discussions underway.",
+  "views": 15800,
+  "forwards": 120,
+  "replies": 6,
+  "link": "https://t.me/TimesOfGaza/12345"
+}
+```
+
 ---
 
 ## 📈 Next Steps — Analysis
 
-Once data is collected, you can perform:
-
-1. **Sentiment Analysis** — (`VADER`, `TextBlob`, or `transformers`)
-2. **Topic Modeling** — (`BERTopic`, `LDA`)
-3. **Entity Recognition** — Detect names, places, and organizations
-4. **Temporal Trends** — Compare posting/comment frequency over time
-5. **Platform Comparison** — Contrast Reddit vs YouTube narratives
+1. **Sentiment Analysis** – `VADER`, `TextBlob`, or Hugging Face models
+2. **Topic Modeling** – `LDA`, `BERTopic`, `Top2Vec`
+3. **Entity Extraction** – Identify people, places, organizations
+4. **Trend Analysis** – Measure narrative shifts over time
+5. **Cross-Platform Comparison** – Contrast Reddit vs YouTube vs Telegram tone and reach
 
 ---
 
-## ⚠️ Notes
+## ⚠️ Important Notes
 
-### Rate Limiting
+* Reddit: 1-second delay per request
+* YouTube: 10 000-unit daily quota
+* Telegram: public data only; avoid private groups
 
-* Reddit: uses 1-second delay per request
-* YouTube: limited by daily API quota (10,000 units/day)
-
-### Data Ethics
-
-* Collect **only public** data
-* Respect platform **Terms of Service**
-* Remove or anonymize usernames before publication
+🛡️ **Ethics:** Collect only public data, respect each platform’s Terms of Service, and anonymize user information before analysis or publication.
 
 ---
 
 ## 📚 References
 
-* **Israel–Hamas war through Telegram, Reddit and Twitter** — *Despoina Antonakaki, Sotiris Ioannidis (2025)*
-* **Sentiment analysis of the Hamas–Israel war on YouTube** — *(2025, arXiv preprint)*
+* *Israel–Hamas war through Telegram, Reddit and Twitter* — Despoina Antonakaki & Sotiris Ioannidis (2025)
+* *Sentiment analysis of the Hamas–Israel war on YouTube* — arXiv (2025)
 
 ---
 
 ## 📄 License
 
-This project is for **academic and educational use only**.
-Please cite the original papers if you use or extend this work.
+This project is for **research and educational use only**.
+If you build upon this work, please cite the original research papers and this implementation.
